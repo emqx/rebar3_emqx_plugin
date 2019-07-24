@@ -3,10 +3,17 @@
     {name, "myplugin", "Name of the EMQ X Plugin"},
     {desc, "An EMQ X plugin", "EMQ X Plugin"}
 ]}.
+
+{template, "emqx_plugin/app.conf", "{{name}}/etc/{{name}}.conf"}.
+{template, "emqx_plugin/app.schema", "{{name}}/priv/{{name}}.schema"}.
 {template, "emqx_plugin/app.erl", "{{name}}/src/{{name}}_app.erl"}.
 {template, "emqx_plugin/sup.erl", "{{name}}/src/{{name}}_sup.erl"}.
+{template, "emqx_plugin/app_src.erl", "{{name}}/src/{{name}}.erl"}.
+{template, "emqx_plugin/app.hrl", "{{name}}/include/{{name}}.hrl"}.
+{template, "emqx_plugin/Makefile", "{{name}}/Makefile"}.
 {template, "emqx_plugin/otp_app.app.src", "{{name}}/src/{{name}}.app.src"}.
 {template, "emqx_plugin/app_rebar.config", "{{name}}/rebar.config"}.
+{template, "emqx_plugin/app_rebar.config.script", "{{name}}/rebar.config.script"}.
 {template, "emqx_plugin/gitignore", "{{name}}/.gitignore"}.
 {template, "emqx_plugin/LICENSE", "{{name}}/LICENSE"}.
 {template, "emqx_plugin/README.md", "{{name}}/README.md"}.
