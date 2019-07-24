@@ -1,0 +1,15 @@
+{{=@@ @@=}}
+{application, @@name@@,
+ [{description, "@@desc@@"},
+  {vsn, "git"},
+  {modules, []},
+  {registered, []},
+  {mod, {@@name@@_app, []}},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {licenses, ["Apache 2.0"]},
+  {links, []}
+ ]}.
