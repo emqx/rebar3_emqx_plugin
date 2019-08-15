@@ -5,11 +5,11 @@ How to use templates
 --------------------
 
 To make the template available, you need to clone the repo to your
-`~/.config/.rebar3/templates` directory:
+`~/.config/rebar3/templates` directory:
 
 ``` bash
-mkdir -p ~/.config/.rebar3/templates
-git clone <this_repo_url> ~/.config/.rebar3/templates
+mkdir -p ~/.config/rebar3/templates
+git clone https://github.com/emqx/rebar3_emqx_plugin ~/.config/rebar3/templates
 ```
 
 Creating Erlang/OTP service layout
