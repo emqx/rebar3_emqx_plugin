@@ -1,8 +1,8 @@
--module({{name}}).
+-module(first_plugin).
 
 -include_lib("emqx/include/emqx.hrl").
 
--define(APP, {{name}}).
+-define(APP, first_plugin).
 
 -export([ register_metrics/0
         , load/0
@@ -28,20 +28,20 @@
         , on_message_acked/3
         ]).
 
--define(LOG(Level, Format, Args), emqx_logger:Level("{{name}}: " ++ Format, Args)).
+-define(LOG(Level, Format, Args), emqx_logger:Level("first_plugin: " ++ Format, Args)).
 
 register_metrics() ->
-    [emqx_metrics:new(MetricName) || MetricName <- ['{{name}}.client_connected',
-                                                    '{{name}}.client_disconnected',
-                                                    '{{name}}.client_subscribe',
-                                                    '{{name}}.client_unsubscribe',
-                                                    '{{name}}.session_created',
-                                                    '{{name}}.session_subscribed',
-                                                    '{{name}}.session_unsubscribed',
-                                                    '{{name}}.session_terminated',
-                                                    '{{name}}.message_publish',
-                                                    '{{name}}.message_deliver',
-                                                    '{{name}}.message_acked']].
+    [emqx_metrics:new(MetricName) || MetricName <- ['first_plugin.client_connected',
+                                                    'first_plugin.client_disconnected',
+                                                    'first_plugin.client_subscribe',
+                                                    'first_plugin.client_unsubscribe',
+                                                    'first_plugin.session_created',
+                                                    'first_plugin.session_subscribed',
+                                                    'first_plugin.session_unsubscribed',
+                                                    'first_plugin.session_terminated',
+                                                    'first_plugin.message_publish',
+                                                    'first_plugin.message_deliver',
+                                                    'first_plugin.message_acked']].
 
 load() ->
     lists:foreach(
@@ -98,7 +98,7 @@ on_client_subscribe(#{client_id := ClientId, username := Username}, TopicTable, 
     lists:foreach(fun({Topic, Opts}) ->
       with_filter(
         fun() ->
-          emqx_metrics:inc('web_hook.client_subscribe'),
+          emqx_metrics:inc('web_hook.client_subscribe')
           %% Code Start
 
           %% Here is the code
@@ -114,7 +114,7 @@ on_client_unsubscribe(#{client_id := ClientId, username := Username}, TopicTable
     lists:foreach(fun({Topic, Opts}) ->
       with_filter(
         fun() ->
-          emqx_metrics:inc('web_hook.client_unsubscribe'),
+          emqx_metrics:inc('web_hook.client_unsubscribe')
           %% Code Start
 
           %% Here is the code
@@ -141,7 +141,7 @@ on_session_created(#{client_id := ClientId}, SessInfo, _Env) ->
 on_session_subscribed(#{client_id := ClientId}, Topic, Opts, {Filter}) ->
     with_filter(
       fun() ->
-        emqx_metrics:inc('web_hook.session_subscribed'),
+        emqx_metrics:inc('web_hook.session_subscribed')
         %% Code Start
 
         %% Here is the code
@@ -155,7 +155,7 @@ on_session_subscribed(#{client_id := ClientId}, Topic, Opts, {Filter}) ->
 on_session_unsubscribed(#{client_id := ClientId}, Topic, _Opts, {Filter}) ->
     with_filter(
       fun() ->
-        emqx_metrics:inc('web_hook.session_unsubscribed'),
+        emqx_metrics:inc('web_hook.session_unsubscribed')
         %% Code Start
 
         %% Here is the code
@@ -205,7 +205,7 @@ on_message_deliver(#{client_id := ClientId, username := Username},
                    {Filter}) ->
   with_filter(
     fun() ->
-      emqx_metrics:inc('web_hook.message_deliver'),
+      emqx_metrics:inc('web_hook.message_deliver')
       %% Code Start
 
       %% Here is the code
@@ -219,7 +219,7 @@ on_message_deliver(#{client_id := ClientId, username := Username},
 on_message_acked(#{client_id := ClientId}, Message = #message{topic = Topic, flags = #{retain := Retain}}, {Filter}) ->
     with_filter(
       fun() ->
-        emqx_metrics:inc('web_hook.message_acked'),
+        emqx_metrics:inc('web_hook.message_acked')
         %% Code Start
 
         %% Here is the code
@@ -288,4 +288,3 @@ unload_(Hook, Fun) ->
         'message.acked'       -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
         'message.deliver'     -> emqx:unhook(Hook, fun ?MODULE:Fun/3)
     end.
-
