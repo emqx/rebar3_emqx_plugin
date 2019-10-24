@@ -4,7 +4,7 @@
 %%%-------------------------------------------------------------------
 
 -module({{name}}_app).
-
+-include("{name}}_plugin.hrl").
 -behaviour(application).
 
 -emqx_plugin(?MODULE).
