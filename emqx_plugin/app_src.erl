@@ -28,20 +28,20 @@
   , on_message_acked/3
 ]).
 
--define(LOG(Level, Format, Args), emqx_logger:Level("{{name}}_plugin: " ++ Format, Args)).
+-define(LOG(Level, Format, Args), emqx_logger:Level("{{name}}: " ++ Format, Args)).
 
 register_metrics() ->
-  [emqx_metrics:new(MetricName) || MetricName <- ['first_plugin.client_connected',
-    'first_plugin.client_disconnected',
-    'first_plugin.client_subscribe',
-    'first_plugin.client_unsubscribe',
-    'first_plugin.session_created',
-    'first_plugin.session_subscribed',
-    'first_plugin.session_unsubscribed',
-    'first_plugin.session_terminated',
-    'first_plugin.message_publish',
-    'first_plugin.message_deliver',
-    'first_plugin.message_acked']].
+  [emqx_metrics:new(MetricName) || MetricName <- ['{{name}}.client_connected',
+    '{{name}}.client_disconnected',
+    '{{name}}.client_subscribe',
+    '{{name}}.client_unsubscribe',
+    '{{name}}.session_created',
+    '{{name}}.session_subscribed',
+    '{{name}}.session_unsubscribed',
+    '{{name}}.session_terminated',
+    '{{name}}.message_publish',
+    '{{name}}.message_deliver',
+    '{{name}}.message_acked']].
 
 load() ->
   lists:foreach(
