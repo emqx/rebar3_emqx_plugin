@@ -10,15 +10,15 @@
 -emqx_plugin(?MODULE).
 
 -export([ start/2
-        , stop/1
-        ]).
+  , stop/1
+]).
 
 start(_StartType, _StartArgs) ->
-    {ok, Sup} = {{name}}_sup:start_link(),
-    ?APP:load(),
-    {ok, Sup}.
+  {ok, Sup} = {{name}}_sup:start_link(),
+?APP:load(),
+{ok, Sup}.
 
 stop(_State) ->
-    ?APP:unload(),
-    ok.
+  ?APP:unload(),
+  ok.
 %% internal functions

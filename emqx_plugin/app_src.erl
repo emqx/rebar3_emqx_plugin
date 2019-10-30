@@ -1,29 +1,29 @@
--module({{name}}_plugin).
+-module({{name}}).
 
 -include_lib("emqx/include/emqx.hrl").
 
--define(APP, {{name}}_plugin).
+-define(APP, {{name}}).
 
--export([register_metrics/0
+-export([ register_metrics/0
   , load/0
   , unload/0
 ]).
 
--export([on_client_connected/4
+-export([ on_client_connected/4
   , on_client_disconnected/3
 ]).
 
--export([on_client_subscribe/3
+-export([ on_client_subscribe/3
   , on_client_unsubscribe/3
 ]).
 
--export([on_session_created/3
+-export([ on_session_created/3
   , on_session_subscribed/4
   , on_session_unsubscribed/4
   , on_session_terminated/3
 ]).
 
--export([on_message_publish/2
+-export([ on_message_publish/2
   , on_message_deliver/3
   , on_message_acked/3
 ]).
@@ -99,12 +99,12 @@ on_client_subscribe(#{client_id := ClientId, username := Username}, TopicTable, 
     with_filter(
       fun() ->
         emqx_metrics:inc('web_hook.client_subscribe'),
-        %% Code Start
+      %% Code Start
 
-        %% Here is the code
+      %% Here is the code
 
-        %% End
-        ok
+      %% End
+      ok
       end, Topic, Filter)
                 end, TopicTable).
 
@@ -116,12 +116,12 @@ on_client_unsubscribe(#{client_id := ClientId, username := Username}, TopicTable
     with_filter(
       fun() ->
         emqx_metrics:inc('web_hook.client_unsubscribe'),
-        %% Code Start
+      %% Code Start
 
-        %% Here is the code
+      %% Here is the code
 
-        %% End
-        ok
+      %% End
+      ok
       end, Topic, Filter)
                 end, TopicTable).
 
@@ -144,12 +144,12 @@ on_session_subscribed(#{client_id := ClientId}, Topic, Opts, {Filter}) ->
   with_filter(
     fun() ->
       emqx_metrics:inc('web_hook.session_subscribed'),
-      %% Code Start
+    %% Code Start
 
-      %% Here is the code
+    %% Here is the code
 
-      %% End
-      ok
+    %% End
+    ok
     end, Topic, Filter).
 
 %%--------------------------------------------------------------------
@@ -159,12 +159,12 @@ on_session_unsubscribed(#{client_id := ClientId}, Topic, _Opts, {Filter}) ->
   with_filter(
     fun() ->
       emqx_metrics:inc('web_hook.session_unsubscribed'),
-      %% Code Start
+    %% Code Start
 
-      %% Here is the code
+    %% Here is the code
 
-      %% End
-      ok
+    %% End
+    ok
     end, Topic, Filter).
 
 %%--------------------------------------------------------------------
@@ -210,12 +210,11 @@ on_message_deliver(#{client_id := ClientId, username := Username},
   with_filter(
     fun() ->
       emqx_metrics:inc('web_hook.message_deliver'),
-      %% Code Start
+    %% Code Start
 
-      %% Here is the code
+    %% Here is the code
 
-      %% End
-      {ok, Message}
+    %% End
     end, Topic, Filter).
 
 %%--------------------------------------------------------------------
@@ -225,12 +224,11 @@ on_message_acked(#{client_id := ClientId}, Message = #message{topic = Topic, fla
   with_filter(
     fun() ->
       emqx_metrics:inc('web_hook.message_acked'),
-      %% Code Start
+    %% Code Start
 
-      %% Here is the code
+    %% Here is the code
 
-      %% End
-      {ok, Message}
+    %% End
     end, Topic, Filter).
 
 %%--------------------------------------------------------------------
@@ -250,7 +248,7 @@ with_filter(Fun, _, undefined) ->
   Fun(), ok;
 with_filter(Fun, Topic, Filter) ->
   case emqx_topic:match(Topic, Filter) of
-    true -> Fun(), ok;
+    true  -> Fun(), ok;
     false -> ok
   end.
 
@@ -258,7 +256,7 @@ with_filter(Fun, _, _, undefined) ->
   Fun();
 with_filter(Fun, Msg, Topic, Filter) ->
   case emqx_topic:match(Topic, Filter) of
-    true -> Fun();
+    true  -> Fun();
     false -> {ok, Msg}
   end.
 
@@ -267,30 +265,30 @@ a2b(A) -> A.
 
 load_(Hook, Fun, Params) ->
   case Hook of
-    'client.connected' -> emqx:hook(Hook, fun ?MODULE:Fun/4, [Params]);
+    'client.connected'    -> emqx:hook(Hook, fun ?MODULE:Fun/4, [Params]);
     'client.disconnected' -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
-    'client.subscribe' -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
-    'client.unsubscribe' -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
-    'session.created' -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
-    'session.subscribed' -> emqx:hook(Hook, fun ?MODULE:Fun/4, [Params]);
-    'session.unsubscribed' -> emqx:hook(Hook, fun ?MODULE:Fun/4, [Params]);
-    'session.terminated' -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
-    'message.publish' -> emqx:hook(Hook, fun ?MODULE:Fun/2, [Params]);
-    'message.acked' -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
-    'message.deliver' -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params])
+    'client.subscribe'    -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
+    'client.unsubscribe'  -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
+    'session.created'     -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
+    'session.subscribed'  -> emqx:hook(Hook, fun ?MODULE:Fun/4, [Params]);
+    'session.unsubscribed'-> emqx:hook(Hook, fun ?MODULE:Fun/4, [Params]);
+    'session.terminated'  -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
+    'message.publish'     -> emqx:hook(Hook, fun ?MODULE:Fun/2, [Params]);
+    'message.acked'       -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
+    'message.deliver'     -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params])
   end.
 
 unload_(Hook, Fun) ->
   case Hook of
-    'client.connected' -> emqx:unhook(Hook, fun ?MODULE:Fun/4);
+    'client.connected'    -> emqx:unhook(Hook, fun ?MODULE:Fun/4);
     'client.disconnected' -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
-    'client.subscribe' -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
-    'client.unsubscribe' -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
-    'session.created' -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
-    'session.subscribed' -> emqx:unhook(Hook, fun ?MODULE:Fun/4);
-    'session.unsubscribed' -> emqx:unhook(Hook, fun ?MODULE:Fun/4);
-    'session.terminated' -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
-    'message.publish' -> emqx:unhook(Hook, fun ?MODULE:Fun/2);
-    'message.acked' -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
-    'message.deliver' -> emqx:unhook(Hook, fun ?MODULE:Fun/3)
+    'client.subscribe'    -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
+    'client.unsubscribe'  -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
+    'session.created'     -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
+    'session.subscribed'  -> emqx:unhook(Hook, fun ?MODULE:Fun/4);
+    'session.unsubscribed'-> emqx:unhook(Hook, fun ?MODULE:Fun/4);
+    'session.terminated'  -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
+    'message.publish'     -> emqx:unhook(Hook, fun ?MODULE:Fun/2);
+    'message.acked'       -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
+    'message.deliver'     -> emqx:unhook(Hook, fun ?MODULE:Fun/3)
   end.
