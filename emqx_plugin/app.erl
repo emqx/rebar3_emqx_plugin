@@ -7,6 +7,8 @@
 
 -behaviour(application).
 
+-include("{{name}}.hrl").
+
 -emqx_plugin(?MODULE).
 
 -export([ start/2
