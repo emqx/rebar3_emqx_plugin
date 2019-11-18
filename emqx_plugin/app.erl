@@ -18,9 +18,9 @@
 start(_StartType, _StartArgs) ->
     {ok, Sup} = {{name}}_sup:start_link(),
     ?APP:load(),
+    ?APP:register_metrics(),
     {ok, Sup}.
 
 stop(_State) ->
     ?APP:unload(),
     ok.
-%% internal functions

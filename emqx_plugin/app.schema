@@ -16,19 +16,11 @@
   {datatype, string}
 ]}.
 
-{mapping, "{{name}}.hook.session.created.$name", "{{name}}.hooks", [
-  {datatype, string}
-]}.
-
 {mapping, "{{name}}.hook.session.subscribed.$name", "{{name}}.hooks", [
   {datatype, string}
 ]}.
 
 {mapping, "{{name}}.hook.session.unsubscribed.$name", "{{name}}.hooks", [
-  {datatype, string}
-]}.
-
-{mapping, "{{name}}.hook.session.terminated.$name", "{{name}}.hooks", [
   {datatype, string}
 ]}.
 
@@ -40,7 +32,7 @@
   {datatype, string}
 ]}.
 
-{mapping, "{{name}}.hook.message.deliver.$name", "{{name}}.hooks", [
+{mapping, "{{name}}.hook.message.delivered.$name", "{{name}}.hooks", [
   {datatype, string}
 ]}.
 

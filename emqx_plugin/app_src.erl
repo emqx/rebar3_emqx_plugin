@@ -9,21 +9,19 @@
         ]).
 
 -export([ on_client_connected/4
-        , on_client_disconnected/3
+        , on_client_disconnected/4
         ]).
 
 -export([ on_client_subscribe/4
         , on_client_unsubscribe/4
         ]).
 
--export([ on_session_created/3
-        , on_session_subscribed/4
+-export([ on_session_subscribed/4
         , on_session_unsubscribed/4
-        , on_session_terminated/3
         ]).
 
 -export([ on_message_publish/2
-        , on_message_deliver/3
+        , on_message_delivered/3
         , on_message_acked/3
         ]).
 
@@ -34,12 +32,10 @@ register_metrics() ->
                                                     '{{name}}.client_disconnected',
                                                     '{{name}}.client_subscribe',
                                                     '{{name}}.client_unsubscribe',
-                                                    '{{name}}.session_created',
                                                     '{{name}}.session_subscribed',
                                                     '{{name}}.session_unsubscribed',
-                                                    '{{name}}.session_terminated',
                                                     '{{name}}.message_publish',
-                                                    '{{name}}.message_deliver',
+                                                    '{{name}}.message_delivered',
                                                     '{{name}}.message_acked']].
 
 load() ->
@@ -58,7 +54,7 @@ unload() ->
 %%--------------------------------------------------------------------
 %% Client connected
 %%--------------------------------------------------------------------
-on_client_connected(#{client_id := ClientId, username := Username}, 0, ConnInfo, _Env) ->
+on_client_connected(#{clientid := ClientId, username := Username}, 0, ConnInfo, _Env) ->
     emqx_metrics:inc('{{name}}.client_connected'),
     %% Code Start
 
@@ -73,11 +69,11 @@ on_client_connected(#{}, _ConnAck, _ConnInfo, _Env) ->
 %%--------------------------------------------------------------------
 %% Client disconnected
 %%--------------------------------------------------------------------
-on_client_disconnected(#{}, auth_failure, _Env) ->
+on_client_disconnected(#{}, auth_failure, _ConnInfo, _Env) ->
     ok;
-on_client_disconnected(Client, {shutdown, Reason}, Env) when is_atom(Reason) ->
-    on_client_disconnected(Reason, Client, Env);
-on_client_disconnected(#{client_id := ClientId, username := Username}, Reason, _Env)
+on_client_disconnected(Client, {shutdown, Reason}, ConnInfo, Env) when is_atom(Reason) ->
+    on_client_disconnected(Client, Reason, ConnInfo, Env);
+on_client_disconnected(#{clientid := ClientId, username := Username}, Reason, _ConnInfo, _Env)
     when is_atom(Reason) ->
     emqx_metrics:inc('{{name}}.client_disconnected'),
     %% Code Start
@@ -86,14 +82,14 @@ on_client_disconnected(#{client_id := ClientId, username := Username}, Reason, _
 
     %% End
     ok;
-on_client_disconnected(_, Reason, _Env) ->
+on_client_disconnected(_, Reason, _ConnInfo, _Env) ->
     ?LOG(error, "Client disconnected, cannot encode reason: ~p", [Reason]),
     ok.
 
 %%--------------------------------------------------------------------
 %% Client subscribe
 %%--------------------------------------------------------------------
-on_client_subscribe(#{client_id := ClientId, username := Username}, Properties, RawTopicFilters, {Filter}) ->
+on_client_subscribe(#{clientid := ClientId, username := Username}, Properties, RawTopicFilters, {Filter}) ->
     lists:foreach(fun({Topic, Opts}) ->
       with_filter(
         fun() ->
@@ -110,7 +106,7 @@ on_client_subscribe(#{client_id := ClientId, username := Username}, Properties, 
 %%--------------------------------------------------------------------
 %% Client unsubscribe
 %%--------------------------------------------------------------------
-on_client_unsubscribe(#{client_id := ClientId, username := Username}, Properties, RawTopicFilters, {Filter}) ->
+on_client_unsubscribe(#{clientid := ClientId, username := Username}, Properties, RawTopicFilters, {Filter}) ->
     lists:foreach(fun({Topic, Opts}) ->
       with_filter(
         fun() ->
@@ -125,21 +121,9 @@ on_client_unsubscribe(#{client_id := ClientId, username := Username}, Properties
     end, RawTopicFilters).
 
 %%--------------------------------------------------------------------
-%% Session created
-%%--------------------------------------------------------------------
-on_session_created(#{client_id := ClientId}, SessAttrs, _Env) ->
-    emqx_metrics:inc('{{name}}.session_created'),
-    %% Code Start
-
-    %% Here is the code
-
-    %% End
-    ok.
-
-%%--------------------------------------------------------------------
 %% Session subscribed
 %%--------------------------------------------------------------------
-on_session_subscribed(#{client_id := ClientId}, Topic, SubOpts, {Filter}) ->
+on_session_subscribed(#{clientid := ClientId}, Topic, SubOpts, {Filter}) ->
     with_filter(
       fun() ->
         emqx_metrics:inc('{{name}}.session_subscribed'),
@@ -154,7 +138,7 @@ on_session_subscribed(#{client_id := ClientId}, Topic, SubOpts, {Filter}) ->
 %%--------------------------------------------------------------------
 %% Session unsubscribed
 %%--------------------------------------------------------------------
-on_session_unsubscribed(#{client_id := ClientId}, Topic, Opts, {Filter}) ->
+on_session_unsubscribed(#{clientid := ClientId}, Topic, Opts, {Filter}) ->
     with_filter(
       fun() ->
         emqx_metrics:inc('{{name}}.session_unsubscribed'),
@@ -165,18 +149,6 @@ on_session_unsubscribed(#{client_id := ClientId}, Topic, Opts, {Filter}) ->
         %% End
         ok
       end, Topic, Filter).
-
-%%--------------------------------------------------------------------
-%% Session terminated
-%%--------------------------------------------------------------------
-on_session_terminated(#{client_id := ClientId}, ReasonCode, _Env) ->
-    emqx_metrics:inc('{{name}}.session_terminated'),
-    %% Code Start
-
-    %% Here is the code
-
-    %% End
-    ok.
 
 %%--------------------------------------------------------------------
 %% Message publish
@@ -198,12 +170,12 @@ on_message_publish(Message = #message{topic = Topic, flags = #{retain := Retain}
 %%--------------------------------------------------------------------
 %% Message deliver
 %%--------------------------------------------------------------------
-on_message_deliver(#{client_id := ClientId, username := Username},
+on_message_delivered(#{clientid := ClientId, username := Username},
                    Message = #message{topic = Topic, payload = Payload},
                    {Filter}) ->
   with_filter(
     fun() ->
-      emqx_metrics:inc('{{name}}.message_deliver'),
+      emqx_metrics:inc('{{name}}.message_delivered'),
       %% Code Start
 
       %% Here is the code
@@ -215,7 +187,7 @@ on_message_deliver(#{client_id := ClientId, username := Username},
 %%--------------------------------------------------------------------
 %% Message acked
 %%--------------------------------------------------------------------
-on_message_acked(#{client_id := ClientId}, Message = #message{topic = Topic}, {Filter}) ->
+on_message_acked(#{clientid := ClientId}, Message = #message{topic = Topic}, {Filter}) ->
     with_filter(
       fun() ->
         emqx_metrics:inc('{{name}}.message_acked'),
@@ -259,30 +231,26 @@ with_filter(Fun, Msg, Topic, Filter) ->
 load_(Hook, Fun, Params) ->
     case Hook of
         'client.connected'    -> emqx:hook(Hook, fun ?MODULE:Fun/4, [Params]);
-        'client.disconnected' -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
+        'client.disconnected' -> emqx:hook(Hook, fun ?MODULE:Fun/4, [Params]);
         'client.subscribe'    -> emqx:hook(Hook, fun ?MODULE:Fun/4, [Params]);
         'client.unsubscribe'  -> emqx:hook(Hook, fun ?MODULE:Fun/4, [Params]);
-        'session.created'     -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
         'session.subscribed'  -> emqx:hook(Hook, fun ?MODULE:Fun/4, [Params]);
         'session.unsubscribed'-> emqx:hook(Hook, fun ?MODULE:Fun/4, [Params]);
-        'session.terminated'  -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
         'message.publish'     -> emqx:hook(Hook, fun ?MODULE:Fun/2, [Params]);
         'message.acked'       -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params]);
-        'message.deliver'     -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params])
+        'message.delivered'   -> emqx:hook(Hook, fun ?MODULE:Fun/3, [Params])
     end.
 
 unload_(Hook, Fun) ->
     case Hook of
         'client.connected'    -> emqx:unhook(Hook, fun ?MODULE:Fun/4);
-        'client.disconnected' -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
+        'client.disconnected' -> emqx:unhook(Hook, fun ?MODULE:Fun/4);
         'client.subscribe'    -> emqx:unhook(Hook, fun ?MODULE:Fun/4);
         'client.unsubscribe'  -> emqx:unhook(Hook, fun ?MODULE:Fun/4);
-        'session.created'     -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
         'session.subscribed'  -> emqx:unhook(Hook, fun ?MODULE:Fun/4);
         'session.unsubscribed'-> emqx:unhook(Hook, fun ?MODULE:Fun/4);
-        'session.terminated'  -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
         'message.publish'     -> emqx:unhook(Hook, fun ?MODULE:Fun/2);
         'message.acked'       -> emqx:unhook(Hook, fun ?MODULE:Fun/3);
-        'message.deliver'     -> emqx:unhook(Hook, fun ?MODULE:Fun/3)
+        'message.delivered'   -> emqx:unhook(Hook, fun ?MODULE:Fun/3)
     end.
 
