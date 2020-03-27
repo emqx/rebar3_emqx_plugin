@@ -8,7 +8,7 @@
         , unload/0
         ]).
 
--export([ on_client_connected/4
+-export([ on_client_connected/3
         , on_client_disconnected/4
         ]).
 
@@ -54,7 +54,7 @@ unload() ->
 %%--------------------------------------------------------------------
 %% Client connected
 %%--------------------------------------------------------------------
-on_client_connected(#{clientid := ClientId, username := Username}, 0, ConnInfo, _Env) ->
+on_client_connected(#{clientid := ClientId, username := Username}, ConnInfo, _Env) ->
     emqx_metrics:inc('{{name}}.client_connected'),
     %% Code Start
 
@@ -63,7 +63,7 @@ on_client_connected(#{clientid := ClientId, username := Username}, 0, ConnInfo, 
     %% End
     ok;
 
-on_client_connected(#{}, _ConnAck, _ConnInfo, _Env) ->
+on_client_connected(#{}, _ConnInfo, _Env) ->
     ok.
 
 %%--------------------------------------------------------------------
