@@ -1,10 +1,10 @@
-{{name}}
-========
+## {{name}}
 
 {{desc}}
 
-##### {{name}}.conf
+## Quick Start
 
+### Config
 ```properties
 {{name}}.hook.client.connected.1     = {"action": "on_client_connected"}
 {{name}}.hook.client.disconnected.1  = {"action": "on_client_disconnected"}
@@ -17,14 +17,17 @@
 {{name}}.hook.message.acked.1        = {"action": "on_message_acked"}
 ```
 
-License
--------
+### Notice
+some notice....
 
+## License
 Apache License Version 2.0
 
-Author
-------
+## Author
 
-Contributors
-------------
+## Community
+- Page: https://www.emax.io
+- Other: ....
+
+## Contributors
 
